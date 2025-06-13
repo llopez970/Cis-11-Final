@@ -7,15 +7,17 @@
 .ORIG X3000
 LEA R6, STACK	;STACK POINTER
 AND R7, R7, #0	;CLEAR R7 
+AND R5, R5, #0
+
 RESTART_LOOP
-	ADD R1, R7, #-5
-	BRzp DONE	;IF R7 >= 5, HALT 
+	ADD R1, R5, #-5
+	BRzp DONE	;IF  >= 5, HALT 
 
 	LEA R0, PROMPT
 	PUTS		; SHOW ON CONSOLE
         GETC
 	OUT
- 	ADD R1, R0, #-16
+ 	ADD R1, R0, #-16	;ASCII CONVERSION
 	ADD R1, R1, #-16
 	ADD R1, R1, #-16
 	ADD R2, R1, #0		
@@ -42,55 +44,56 @@ RESTART_LOOP
 	ADD R3, R0, #-16
 	ADD R3, R3, #-16
 	ADD R3, R3, #-16	;R3 = 3RD DIGIT(ONES)
+
 	ADD R4, R1, R2
 	ADD R4, R4, R3		;R4 = SCORE
 	
 	; Check if score < 0
-	ADD R5, R4, #0
+	ADD R1, R4, #0
 	BRn ERROR		;IF  < 0 (POSITIVE #'S ONLY)
 	
 	; Check if score > 100
-	ADD R5, R4, #-15
-	ADD R5, R5, #-15
-	ADD R5, R5, #-15
-	ADD R5, R5, #-15
-	ADD R5, R5, #-15
-	ADD R5, R5, #-15
-	ADD R5, R5, #-10
-	
+	ADD R1, R4, #-15
+	ADD R1, R1, #-15
+	ADD R1, R1, #-15
+	ADD R1, R1, #-15
+	ADD R1, R1, #-15
+	ADD R1, R1, #-15
+	ADD R1, R1, #-10
 	BRp ERROR		;IF > 100
+
 ;STORE VALID SCORE(R4) INTO ARRAY
 	LEA R1, SCORES
 	ADD R1, R1, R7
 	STR R4, R1, #0
 ;GRADE ASSIGNMENT LOGIC
-	ADD R5, R4, #-15
-	ADD R5, R5, #-15
-	ADD R5, R5, #-15
-	ADD R5, R5, #-15
-	ADD R5, R5, #-15
-	ADD R5, R5, #-15
+	ADD R1, R4, #-15
+	ADD R1, R1, #-15
+	ADD R1, R1, #-15
+	ADD R1, R1, #-15
+	ADD R1, R1, #-15
+	ADD R1, R1, #-15
 	BRzp DISPLAY_A	
 				;IF >= 90
-	ADD R5, R4, #-15
-	ADD R5, R5, #-15
-	ADD R5, R5, #-15
-	ADD R5, R5, #-15
-	ADD R5, R5, #-15
-	ADD R5, R5, #-5
+	ADD R1, R4, #-15
+	ADD R1, R1, #-15
+	ADD R1, R1, #-15
+	ADD R1, R1, #-15
+	ADD R1, R1, #-15
+	ADD R1, R1, #-5
 	BRzp DISPLAY_B	
 		;IF >= 80
-	ADD R5, R4, #-15
-	ADD R5, R5, #-15
-	ADD R5, R5, #-15
-	ADD R5, R5, #-15
-	ADD R5, R5, #-10
+	ADD R1, R4, #-15
+	ADD R1, R1, #-15
+	ADD R1, R1, #-15
+	ADD R1, R1, #-15
+	ADD R1, R1, #-10
 	BRzp DISPLAY_C
 				;IF >= 70
-	ADD R5, R4, #-15
-	ADD R5, R5, #-15
-	ADD R5, R5, #-15
-	ADD R5, R5, #-15
+	ADD R1, R4, #-15
+	ADD R1, R1, #-15
+	ADD R1, R1, #-15
+	ADD R1, R1, #-15
 	BRzp DISPLAY_D	
 				;IF >= 60
 	
@@ -115,12 +118,15 @@ DISPLAY
 	LEA R0, LF
 	PUTS
 	ADD R7, R7, #1		;INCREMENT++
-	BR RESTART_LOOP
+	BR END
 ERROR
 	LEA R0, ERMS
 	PUTS
 	LEA R0, LF
 	PUTS
+	
+END
+	ADD R5, R5, #1	;INCREMENT++
 	BR RESTART_LOOP
 DONE
 ;add min,max, average subroutines here!!! - Luis
@@ -135,6 +141,7 @@ GRADE_C	.STRINGZ "\nYOU GOT A C"
 GRADE_D .STRINGZ "\nYOU GOT A D"
 GRADE_F .STRINGZ "\nYOU GOT AN F"
 LF	.FILL x000A
-SCORES	.BLKW 5		;space for 5 scores
-STACK	.BLKW 20	; for future use
+SCORES	.BLKW 5		;SPACE FOR 5 SCORES
+STACK	.BLKW 20	;SPACE FOR LATER USE
 .END
+
